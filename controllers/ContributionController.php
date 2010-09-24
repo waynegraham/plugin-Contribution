@@ -134,15 +134,25 @@ class Contribution_ContributionController extends Omeka_Controller_Action
                 return false;
             }
 
+            if ($contributionTypeId !== "" && is_numeric($contributionTypeId)) {
+                $contributionType = get_db()->getTable('ContributionType')->find($contributionTypeId);
+                $itemTypeId = $contributionType->getItemType()->id;
+            } else {
+                $this->flashError('You must select a type for your contribution.');
+                return false;
+            }
+
             if (!($contributor = $this->_processContributor($item, $post))) {
                 return false;
             }
             
             $itemMetadata = array('public'       => false,
                                   'featured'     => false,
+                                  'collection_id'=> $contributionCollectionId,
                                   'item_type_id' => $itemTypeId);
             
-            $collectionId = get_option('contribution_collection_id');
+            $contributionCollectionId = trim($post['contribution_collection']);
+            $collectionId = $contributionCollectionId ? $contributionCollectionId : get_option('contribution_collection_id');
             if (!empty($collectionId) && is_numeric($collectionId)) {
                 $itemMetadata['collection_id'] = (int) $collectionId;
             }

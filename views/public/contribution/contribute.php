@@ -22,6 +22,12 @@ enableContributionAjaxForm(<?php echo js_escape(uri('contribution/type-form')); 
     
     <h1><?php echo $head['title']; ?></h1>
     <form method="POST" enctype="multipart/form-data">
+        <fieldset id="contribution-item-collection">
+            <legend>Collection</legend>
+            <label for="contribution_collection">Choose the Collection</label>
+                <?php echo select_collection(array('name'=>'contribution_collection', 'id'=>'contribution-collection'),$_POST['contribution_collection']); ?>
+        </fieldset>
+        
         <fieldset id="contribution-item-metadata">
             <div class="inputs">
                 <label for="contribution_type">What type of item do you want to contribute?</label>
@@ -32,6 +38,7 @@ enableContributionAjaxForm(<?php echo js_escape(uri('contribution/type-form')); 
             <?php if (isset($typeForm)): echo $typeForm; endif; ?>
             </div>
         </fieldset>
+        
         <fieldset id="contribution-contributor-metadata" <?php if (!isset($typeForm)) { echo 'style="display: none;"'; }?>>
             <legend>Personal Information</legend>
             <div class="field">

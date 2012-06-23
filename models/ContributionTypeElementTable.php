@@ -16,7 +16,7 @@
 class ContributionTypeElementTable extends Omeka_Db_Table
 {
     protected $_alias = 'cte';
-    
+
     /**
      * Retrieves ContributionTypeElements associated with the given type.
      *
@@ -30,10 +30,10 @@ class ContributionTypeElementTable extends Omeka_Db_Table
         } else {
             $typeId = $type->id;
         }
-        
+
         return $this->findBySql('type_id = ?', array($typeId));
     }
-    
+
     public function getSelect()
     {
         $select = parent::getSelect();

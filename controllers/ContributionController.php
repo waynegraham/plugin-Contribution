@@ -5,14 +5,14 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for contributions themselves.
  */
 class Contribution_ContributionController extends Omeka_Controller_Action
 {   
     protected $_captcha;
-    
+
     /**
      * Index action; simply forwards to contributeAction.
      */
@@ -20,14 +20,14 @@ class Contribution_ContributionController extends Omeka_Controller_Action
     {
         $this->_forward('contribute');
     }
-    
+
     /**
      * Action for main contribution form.
      */
     public function contributeAction()
     {
         $this->_captcha = $this->_setupCaptcha();
-        
+
         if ($this->_processForm($_POST)) {
             $route = $this->getFrontController()->getRouter()->getCurrentRouteName();
             $this->redirect->gotoRoute(array('action' => 'thankyou'), $route);
@@ -35,7 +35,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             if ($this->_captcha) {
                 $this->view->captchaScript = $this->_captcha->render(new Zend_View);
             }
-            
+
             $typeId = null;
             if (isset($_POST['contribution_type']) && ($postedType = $_POST['contribution_type'])) {
                 $typeId = $postedType;
@@ -48,7 +48,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             }
         }
     }
-    
+
     /**
      * Action for AJAX request from contribute form.
      */
@@ -56,14 +56,14 @@ class Contribution_ContributionController extends Omeka_Controller_Action
     {
         $this->_setupContributeSubmit($_POST['contribution_type']);
     }
-    
+
     /**
      * Displays terms of service for contribution.
      */
     public function termsAction()
     {
     }
-    
+
     /**
      * Displays a "Thank You" message to users who have contributed an item 
      * through the public form.
@@ -71,7 +71,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
     public function thankyouAction()
     {
     }
-    
+
     /**
      * Common tasks whenever displaying submit form for contribution.
      *
@@ -83,11 +83,11 @@ class Contribution_ContributionController extends Omeka_Controller_Action
         $this->view->addHelperPath(CONTRIBUTION_HELPERS_DIR, 'Contribution_View_Helper');
         $item = new Item;
         $this->view->item = $item;
-        
+
         $type = get_db()->getTable('ContributionType')->find($typeId);
         $this->view->type = $type;
     }
-    
+
     /**
      * Creates the reCAPTCHA object and returns it.
      * 
@@ -97,7 +97,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
     {
         return Omeka_Captcha::getCaptcha();
     }
-    
+
     /**
      * Handle the POST for adding an item via the public form.
      * 
@@ -116,11 +116,11 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             if (!isset($post['form-submit'])) {
                 return false;
             }
-            
+
             if (!$this->_validateContribution($post)) {
                 return false;
             }
-            
+
             $contributionTypeId = trim($post['contribution_type']);
             if ($contributionTypeId !== "" && is_numeric($contributionTypeId)) {
                 $contributionType = get_db()->getTable('ContributionType')->find($contributionTypeId);
@@ -133,16 +133,16 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             if (!($contributor = $this->_processContributor($item, $post))) {
                 return false;
             }
-            
+
             $itemMetadata = array('public'       => false,
-                                  'featured'     => false,
-                                  'item_type_id' => $itemTypeId);
-            
+                'featured'     => false,
+                'item_type_id' => $itemTypeId);
+
             $collectionId = get_option('contribution_collection_id');
             if (!empty($collectionId) && is_numeric($collectionId)) {
                 $itemMetadata['collection_id'] = (int) $collectionId;
             }
-            
+
             $fileMetadata = $this->_processFileUpload($contributionType);
 
             // This is a hack to allow the file upload job to succeed
@@ -159,7 +159,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             } catch (Omeka_File_Ingest_InvalidException $e) {
                 // Copying this cruddy hack
                 if (strstr($e->getMessage(), "The file 'contributed_file' was not uploaded")) {
-                   $this->flashError("You must upload a file when making a {$contributionType->display_name} contribution.");
+                    $this->flashError("You must upload a file when making a {$contributionType->display_name} contribution.");
                 } else {
                     $this->flashError($e->getMessage());
                 }
@@ -177,12 +177,12 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             $this->_linkItemToContributor($item, $contributor, $post);
 
             $this->_sendEmailNotification($contributor->email, $item);
-            
+
             return true;
         }
         return false;
     }
-    
+
     /**
      * Deals with files specified on the contribution form.
      *
@@ -261,7 +261,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
         $linkage->public = $post['contribution-public'];
         $linkage->save();
     }
-    
+
     /**
      * Adds ElementTexts to item.
      *
@@ -280,7 +280,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             }
         }
     }
-    
+
     /**
      * Validate the contribution form submission.
      * 
@@ -295,7 +295,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
     protected function _validateContribution($post)
     {
         $isValid = true;
-        
+
         $errors = array();
 
         // ReCaptcha ignores the first argument.
@@ -303,19 +303,19 @@ class Contribution_ContributionController extends Omeka_Controller_Action
             $errors[] = 'Your CAPTCHA submission was invalid, please try again.';
             $isValid = false;
         }
-        
+
         if (!@$post['terms-agree']) {
             $errors[] = 'You must agree to the Terms and Conditions.';
             $isValid = false;
         }
-        
+
         if ($errors) {
             $this->flashError(join("\n", $errors));
         }
-        
+
         return $isValid;
     }
-    
+
     /**
      * Send an email notification to the user who contributed the Item.
      * 
@@ -334,7 +334,7 @@ class Contribution_ContributionController extends Omeka_Controller_Action
 
         $this->view->item = $item;
         $item->view->email = $toEmail;
-        
+
         //If this field is empty, don't send the email
         if (!empty($fromAddress)) {
             $contributorMail = new Zend_Mail;

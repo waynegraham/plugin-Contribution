@@ -5,13 +5,13 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 class Contribution_Form_Settings extends Omeka_Form
 {
     public function init()
     {
         parent::init();
-        
+
         $this->setMethod('post');
         $this->setAttrib('id', 'settings-form');
 
@@ -28,9 +28,9 @@ class Contribution_Form_Settings extends Omeka_Form
         $this->addElement('textarea', 'contribution_email_recipients', array(
             'label'       => 'New Contribution Notification Emails',
             'description' => 'An email message will be sent to '
-                           . 'each address here whenever a new item is '
-                           . 'contributed. Leave blank if you do not want '
-                           . 'anyone to be alerted of contributions by email.',
+            . 'each address here whenever a new item is '
+            . 'contributed. Leave blank if you do not want '
+            . 'anyone to be alerted of contributions by email.',
             'attribs'     => array('rows' => '5')
         ));
         $this->addElement('textarea', 'contribution_consent_text', array(
@@ -51,21 +51,21 @@ class Contribution_Form_Settings extends Omeka_Form
         $this->addElement('submit', 'contribution_settings_submit', array(
             'label' => 'Save Settings'
         ));
-        
+
         $this->addDisplayGroup(
             array('contribution_page_path', 'contribution_contributor_email',
-                'contribution_consent_text', 'contribution_collection_id',
-                'contribution_default_type'),
+            'contribution_consent_text', 'contribution_collection_id',
+            'contribution_default_type'),
             'contribution_settings'
         );
-                
+
         $this->addDisplayGroup(array('contribution_settings_submit'), 'submit');
     }
-    
+
     private function _getCollectionSelectOptions()
     {
         $collections = get_db()->getTable('Collection')->findPairsForSelectForm();
-        
+
         return array('' => 'Do not put contributions in any collection') + $collections;
     }
 
@@ -75,12 +75,12 @@ class Contribution_Form_Settings extends Omeka_Form
 
         return array('' => 'No default type') + $types;
     }
-    
+
     /**
      * Overrides the default decorators in Omeka Form to remove escaping from element descriptions.
-     **/
+     */
     public function getDefaultElementDecorators()
-    {       
+    {
         return array(
             'ViewHelper', 
             'Errors', 

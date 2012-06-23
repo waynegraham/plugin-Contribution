@@ -23,7 +23,7 @@ class ContributionContributedItemTable extends Omeka_Db_Table
         } else {
             $itemId = $item;
         }
-        
+
         $select = $this->getSelect();
         $select->where('item_id = ?', $itemId, Zend_Db::PARAM_INT);
         return $this->fetchObject($select);

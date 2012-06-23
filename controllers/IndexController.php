@@ -5,7 +5,7 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for editing and viewing Contribution plugin settings.
  */

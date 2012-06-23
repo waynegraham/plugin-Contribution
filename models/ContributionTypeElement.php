@@ -19,9 +19,9 @@ class ContributionTypeElement extends Omeka_Record
     public $element_id;
     public $prompt;
     public $order;
-    
+
     protected $_related = array('ContributionType' => 'getType',
-                                'Element'          => 'getElement');
+        'Element'          => 'getElement');
 
     protected function _validate()
     {
@@ -42,7 +42,7 @@ class ContributionTypeElement extends Omeka_Record
     {
         return $this->_db->getTable('ContributionType')->find($this->type_id);
     }
-    
+
     /**
      * Get the Element associated with this type element.
      *

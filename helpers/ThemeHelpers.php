@@ -30,7 +30,7 @@ function contribution_select_type($name, $default = null, $attributes = null)
 {
     $options = get_db()->getTable('ContributionType')->findPairsForSelectForm();
     $options = array('' => 'Select a Type') + $options;
-    
+
     if (!$default) {
         $default = get_option('contribution_default_type');
     }
@@ -49,7 +49,7 @@ function contribution_get_elements_for_type($type)
     if (is_int($type)) {
         $type = get_db()->getTable('ContributionType')->find($type);
     }
-    
+
     return $type->getTypeElements();
 }
 
@@ -110,8 +110,8 @@ function contribution_admin_header($subsections = array())
     $subsections = array_merge(array($mainTitle), $subsections);
     $displayTitle = implode(' | ', $subsections);
     $head = array('title' => $displayTitle,
-              'bodyclass' => 'contribution',
-              'content_class' => 'horizontal-nav');
+        'bodyclass' => 'contribution',
+        'content_class' => 'horizontal-nav');
     head($head); ?>
 <h1><?php echo $displayTitle; ?></h1>
 <ul id="section-nav" class="navigation">
@@ -121,7 +121,7 @@ function contribution_admin_header($subsections = array())
     'Contributor Questions' => uri('contribution/contributor-metadata'),
     'Submission Settings' => uri('contribution/settings'),
     'Contributors' => uri('contribution/contributors')
-    ));
+));
 ?>
 </ul>
 <?php
@@ -200,7 +200,7 @@ function contribution_is_item_public($item = null)
     if(!$item) {
         $item = get_current_item();
     }
-    
+
     $linkage = get_db()->getTable('ContributionContributedItem')->findByItem($item);
 
     if ($linkage) {
@@ -223,22 +223,22 @@ function contributor($propertyName, $contributor = null)
         $contributor = contribution_get_item_contributor($item);
     }
     switch ($propertyName) {
-        case 'ID':
-            $property = $contributor->id;
-            break;
-        case 'Name':
-            $property = $contributor->name;
-            break;
-        case 'Email Address':
-            $property = $contributor->email;
-            break;
-        default:
-            $data = $contributor->getMetadata();
-            if (array_key_exists($propertyName, $data)) {
-                $property = $data[$propertyName];
-            } else {
-                $property = null;
-            }
+    case 'ID':
+        $property = $contributor->id;
+        break;
+    case 'Name':
+        $property = $contributor->name;
+        break;
+    case 'Email Address':
+        $property = $contributor->email;
+        break;
+    default:
+        $data = $contributor->getMetadata();
+        if (array_key_exists($propertyName, $data)) {
+            $property = $data[$propertyName];
+        } else {
+            $property = null;
+        }
     }
     return html_escape($property);
 }

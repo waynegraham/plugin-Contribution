@@ -5,7 +5,7 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for editing and viewing Contribution plugin contributors.
  */
@@ -21,7 +21,7 @@ class Contribution_ContributorsController extends Omeka_Controller_Action
         }
         $this->_browseRecordsPerPage = get_option('per_page_admin');
     }
-    
+
     /**
      * Index action; simply forwards to browse.
      */

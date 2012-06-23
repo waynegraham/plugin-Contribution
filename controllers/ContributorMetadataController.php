@@ -5,7 +5,7 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for editing and viewing Contribution plugin contributor fields.
  */
@@ -20,7 +20,7 @@ class Contribution_ContributorMetadataController extends Omeka_Controller_Action
             $this->_modelClass = $modelName;
         }
     }
-    
+
     /**
      * Index action; simply forwards to browse.
      */

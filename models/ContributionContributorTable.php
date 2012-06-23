@@ -26,7 +26,7 @@ class ContributionContributorTable extends Omeka_Db_Table
     {
         $select = $this->getSelect();
         $select->where('`email` = ?', $email)
-               ->where('`name` = ?', $name);
+            ->where('`name` = ?', $name);
         return $this->fetchObject($select);
     }
 } 

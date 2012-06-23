@@ -5,7 +5,7 @@
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for editing and viewing Contribution plugin settings.
  */
@@ -18,7 +18,7 @@ class Contribution_SettingsController extends Omeka_Controller_Action
     {
         $this->_forward('edit');
     }
-    
+
     /**
      * Edit action
      */
@@ -28,7 +28,7 @@ class Contribution_SettingsController extends Omeka_Controller_Action
         $form = new Contribution_Form_Settings;
         $defaults = $this->_getOptions();
         $form->setDefaults($defaults);
-        
+
         if (isset($_POST['contribution_settings_submit'])) {
             if ($form->isValid($_POST)) {
                 $this->_setOptions($form->getValues());
@@ -39,10 +39,10 @@ class Contribution_SettingsController extends Omeka_Controller_Action
                 $this->flashError('There were errors found in your form. Please edit and resubmit.');
             }
         }
-        
+
         $this->view->form = $form;
     }
-    
+
     /**
      * Returns the options that are specified in the $_options property.
      *
@@ -56,7 +56,7 @@ class Contribution_SettingsController extends Omeka_Controller_Action
         }
         return $options;
     }
-    
+
     /**
      * Sets options that appear in both the form and $_options.
      *

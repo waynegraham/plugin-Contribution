@@ -8,16 +8,16 @@
 
 define('CONTRIBUTION_PLUGIN_DIR', dirname(__FILE__));
 define('CONTRIBUTION_HELPERS_DIR', CONTRIBUTION_PLUGIN_DIR
-                                 . DIRECTORY_SEPARATOR
-                                 . 'helpers');
+    . DIRECTORY_SEPARATOR
+    . 'helpers');
 define('CONTRIBUTION_FORMS_DIR', CONTRIBUTION_PLUGIN_DIR
-                               . DIRECTORY_SEPARATOR
-                               . 'forms');
+    . DIRECTORY_SEPARATOR
+    . 'forms');
 
 require_once CONTRIBUTION_PLUGIN_DIR . DIRECTORY_SEPARATOR
-           . 'ContributionPlugin.php';
+    . 'ContributionPlugin.php';
 require_once CONTRIBUTION_HELPERS_DIR . DIRECTORY_SEPARATOR
-           . 'ThemeHelpers.php';
+    . 'ThemeHelpers.php';
 
 
 new ContributionPlugin;

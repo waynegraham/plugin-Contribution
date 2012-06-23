@@ -57,12 +57,12 @@ HTML;
     {
         $inputName = "ContributorFields[{$this->id}]";
         switch ($this->type) {
-            case 'Tiny Text':
-                $input = __v()->formText($inputName, $_POST[$inputName], array('class' => 'textinput'));
-                break;
-            case 'Text':
-                $input = __v()->formTextarea($inputName, $_POST[$inputName], array('class' => 'textinput'));
-                break;
+        case 'Tiny Text':
+            $input = __v()->formText($inputName, $_POST[$inputName], array('class' => 'textinput'));
+            break;
+        case 'Text':
+            $input = __v()->formTextarea($inputName, $_POST[$inputName], array('class' => 'textinput'));
+            break;
         }
         return $input;
     }

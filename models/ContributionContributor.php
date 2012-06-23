@@ -18,9 +18,9 @@ class ContributionContributor extends Omeka_Record
     public $name;
     public $email;
     public $ip_address;
-    
+
     protected $_related = array('Items' => 'getContributedItems');
-    
+
     /**
      * Validate form submissions.
      * Gotta have a valid 1) ip address, 2) email address, 3) first & last name
@@ -30,16 +30,16 @@ class ContributionContributor extends Omeka_Record
         if(empty($this->ip_address)) {
             $this->addError('ip_address', 'Contributors must come from a valid IP address.');
         }
-        
+
         if(!Zend_Validate::is($this->email, 'EmailAddress')) {
             $this->addError('email', 'The email address you have provided is invalid.  Please provide another one.');
         }
-        
+
         if(empty($this->name)) {
             $this->addError('name', 'Please provide a complete name.');
         }
     }
-    
+
     /**
      * Return the items that the contributor has contributed.
      *
@@ -57,7 +57,7 @@ WHERE `cci`.`contributor_id` = ?;
 SQL;
         return $db->fetchObjects($sql, $this->id);
     }
-    
+
     /**
      * Gets a standard-format IP address from the internal
      * integer representation.
@@ -75,7 +75,7 @@ SQL;
             return long2ip($ipAddress);
         }
     }
-    
+
     /**
      * Sets an IP dotted-quad address on the Contributor.
      * Converts to a integer in the process.

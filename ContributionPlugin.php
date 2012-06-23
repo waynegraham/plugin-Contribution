@@ -80,7 +80,7 @@ class ContributionPlugin
             `file_permissions` ENUM('Disallowed', 'Allowed', 'Required') NOT NULL DEFAULT 'Disallowed',
             PRIMARY KEY (`id`),
             UNIQUE KEY `item_type_id` (`item_type_id`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}contribution_type_elements` (
@@ -92,7 +92,7 @@ class ContributionPlugin
             PRIMARY KEY (`id`),
             UNIQUE KEY `type_id_element_id` (`type_id`, `element_id`),
             KEY `order` (`order`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}contribution_contributors` (
@@ -101,7 +101,7 @@ class ContributionPlugin
             `email` VARCHAR(255) NOT NULL,
             `ip_address` VARBINARY(128) NOT NULL,
             PRIMARY KEY (`id`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}contribution_contributed_items` (
@@ -111,7 +111,7 @@ class ContributionPlugin
             `public` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`),
             UNIQUE KEY `item_id` (`item_id`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}contribution_contributor_fields` (
@@ -121,7 +121,7 @@ class ContributionPlugin
             `order` INT UNSIGNED NOT NULL,
             PRIMARY KEY (`id`),
             KEY `order` (`order`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->_db->prefix}contribution_contributor_values` (
@@ -131,7 +131,7 @@ class ContributionPlugin
             `value` TEXT NOT NULL,
             PRIMARY KEY (`id`),
             UNIQUE KEY `contributor_id_field_id` (`contributor_id`, `field_id`)
-            ) ENGINE=MyISAM;";
+        ) ENGINE=MyISAM;";
         $this->_db->query($sql);
 
         $this->_createDefaultContributionTypes();
@@ -256,9 +256,9 @@ class ContributionPlugin
         if (!defined('ADMIN')) {
             $router->addRoute('contributionDefault',
                 new Zend_Controller_Router_Route('contribution/:action/*',
-                    array('module'     => 'contribution',
-                          'controller' => 'contribution',
-                          'action'     => 'contribute')));
+                array('module'     => 'contribution',
+                'controller' => 'contribution',
+                'action'     => 'contribute')));
 
             // get the base path
             $bp = get_option('contribution_page_path');
@@ -266,14 +266,14 @@ class ContributionPlugin
             if ($bp) {
                 $router->addRoute('contributionCustom',
                     new Zend_Controller_Router_Route("{$bp}/:action/*",
-                        array('module'     => 'contribution',
-                              'controller' => 'contribution',
-                              'action'     => 'contribute')));
+                    array('module'     => 'contribution',
+                    'controller' => 'contribution',
+                    'action'     => 'contribute')));
             }
         } else {
             $router->addRoute('contributionAdmin',
                 new Zend_Controller_Router_Route('contribution/:controller/:action/:id',
-                    array('module' => 'contribution')));
+                array('module' => 'contribution')));
         }
     }
 
@@ -282,72 +282,72 @@ class ContributionPlugin
      *
      * @param array $nav
      * @return array
-     */
-    public function adminNavigationMain($nav)
-    {
-        if(has_permission('Contribution_Contributors', 'browse')) {
-            $nav['Contribution'] = uri('contribution');
-        }
-        return $nav;
-    }
+                 */
+                public function adminNavigationMain($nav)
+                {
+                    if(has_permission('Contribution_Contributors', 'browse')) {
+                        $nav['Contribution'] = uri('contribution');
+                    }
+                    return $nav;
+                }
 
-    /**
-     * Append a Contribution entry to the public navigation.
-     *
-     * @param array $nav
-     * @return array
-     */
-    public function publicNavigationMain($nav)
-    {
-        $nav['Contribute an Item'] = contribution_contribute_url();
-        return $nav;
-    }
+            /**
+             * Append a Contribution entry to the public navigation.
+             *
+             * @param array $nav
+             * @return array
+                 */
+                public function publicNavigationMain($nav)
+                {
+                    $nav['Contribute an Item'] = contribution_contribute_url();
+                    return $nav;
+                }
 
-    /**
-     * Append routes that render element text form input.
-     *
-     * @param array $routes
-     * @return array
-     */
-    public function simpleVocabRoutes($routes)
-    {
-        $routes[] = array('module' => 'contribution',
-                          'controller' => 'contribution',
-                          'actions' => array('type-form', 'contribute'));
-        return $routes;
-    }
+            /**
+             * Append routes that render element text form input.
+             *
+             * @param array $routes
+             * @return array
+                 */
+                public function simpleVocabRoutes($routes)
+                {
+                    $routes[] = array('module' => 'contribution',
+                        'controller' => 'contribution',
+                        'actions' => array('type-form', 'contribute'));
+                    return $routes;
+                }
 
-    /**
-     * Append Contribution search selectors to the advanced search page.
-     *
-     * @return string HTML
-     */
-    public function adminAppendToAdvancedSearch()
-    {
-        $html = '<div class="field">';
-        $html .= __v()->formLabel('contributed', 'Contribution Status');
-        $html .= '<div class="inputs">';
-        $html .= __v()->formSelect('contributed', null, null, array(
-           ''  => 'Select Below',
-           '1' => 'Only Contributed Items',
-           '0' => 'Only Non-Contributed Items'
-        ));
-        $html .= '</div></div>';
-        echo $html;
-    }
+            /**
+             * Append Contribution search selectors to the advanced search page.
+             *
+             * @return string HTML
+                 */
+                public function adminAppendToAdvancedSearch()
+                {
+                    $html = '<div class="field">';
+                    $html .= __v()->formLabel('contributed', 'Contribution Status');
+                    $html .= '<div class="inputs">';
+                    $html .= __v()->formSelect('contributed', null, null, array(
+                        ''  => 'Select Below',
+                        '1' => 'Only Contributed Items',
+                        '0' => 'Only Non-Contributed Items'
+                    ));
+                    $html .= '</div></div>';
+                    echo $html;
+                }
 
-    public function adminAppendToItemsShowSecondary($item)
-    {
-        if ($contributor = contribution_get_item_contributor($item)) {
-            if (!($name = contributor('Name', $contributor))) {
-                $name = 'Anonymous';
-            }
-            $id = contributor('ID', $contributor);
-            $uri = uri('contribution/contributors/show/id/') . $id;
-            $publicMessage = contribution_is_item_public($item)
-                           ? 'This item can be made public.'
-                           : 'This item should not be made public.';
-        ?>
+            public function adminAppendToItemsShowSecondary($item)
+            {
+                if ($contributor = contribution_get_item_contributor($item)) {
+                    if (!($name = contributor('Name', $contributor))) {
+                        $name = 'Anonymous';
+                    }
+                    $id = contributor('ID', $contributor);
+                    $uri = uri('contribution/contributors/show/id/') . $id;
+                    $publicMessage = contribution_is_item_public($item)
+                        ? 'This item can be made public.'
+                        : 'This item should not be made public.';
+?>
 <div class="info-panel">
     <h2>Contribution</h2>
     <p>This item was contributed by
@@ -356,102 +356,102 @@ class ContributionPlugin
     <p><strong><?php echo $publicMessage; ?></strong></p>
 </div>
 <?php
-        }
-    }
-
-    public function adminAppendToItemsBrowseDetailedEach()
-    {
-        $item = get_current_item();
-        if ($contributor = contribution_get_item_contributor($item)) {
-            if (!($name = contributor('Name', $contributor))) {
-                $name = 'Anonymous';
+                }
             }
-            $id = contributor('ID', $contributor);
-            $uri = uri('contribution/contributors/show/id/') . $id;
-            $publicMessage = contribution_is_item_public($item)
-                           ? 'This item can be made public.'
-                           : 'This item should not be made public.';
-        ?>
+
+            public function adminAppendToItemsBrowseDetailedEach()
+            {
+                $item = get_current_item();
+                if ($contributor = contribution_get_item_contributor($item)) {
+                    if (!($name = contributor('Name', $contributor))) {
+                        $name = 'Anonymous';
+                    }
+                    $id = contributor('ID', $contributor);
+                    $uri = uri('contribution/contributors/show/id/') . $id;
+                    $publicMessage = contribution_is_item_public($item)
+                        ? 'This item can be made public.'
+                        : 'This item should not be made public.';
+?>
 <h3>Contribution</h3>
 <p>This item was contributed by
     <a href="<?php echo $uri; ?>"><?php echo $name; ?></a>.
 </p>
 <p><strong><?php echo $publicMessage; ?></strong></p>
 <?php
-        }
-    }
-
-    /**
-     * Deal with Contribution-specific search terms.
-     *
-     * @param Omeka_Db_Select $select
-     * @param array $params
-     */
-    public function itemBrowseSql($select, $params)
-    {
-        if (($request = Zend_Controller_Front::getInstance()->getRequest())) {
-            $db = get_db();
-            $contributed = $request->get('contributed');
-            if (isset($contributed)) {
-                if ($contributed === '1') {
-                    $select->joinInner(
-                            array('cci' => $db->ContributionContributedItem),
-                            'cci.item_id = i.id',
-                            array()
-                     );
-                } else if ($contributed === '0') {
-                    $select->where("i.id NOT IN (SELECT `item_id` FROM {$db->ContributionContributedItem})");
                 }
             }
 
-            $contributor_id = $request->get('contributor_id');
-            if (is_numeric($contributor_id)) {
-                $select->joinInner(
-                        array('cci' => $db->ContributionContributedItem),
-                        'cci.item_id = i.id',
-                        array('contributor_id')
-                );
-                $select->where('cci.contributor_id = ?', $contributor_id);
-            }
-        }
-    }
+            /**
+             * Deal with Contribution-specific search terms.
+             *
+             * @param Omeka_Db_Select $select
+             * @param array $params
+                 */
+                public function itemBrowseSql($select, $params)
+                {
+                    if (($request = Zend_Controller_Front::getInstance()->getRequest())) {
+                        $db = get_db();
+                        $contributed = $request->get('contributed');
+                        if (isset($contributed)) {
+                            if ($contributed === '1') {
+                                $select->joinInner(
+                                    array('cci' => $db->ContributionContributedItem),
+                                    'cci.item_id = i.id',
+                                    array()
+                                );
+                            } else if ($contributed === '0') {
+                                $select->where("i.id NOT IN (SELECT `item_id` FROM {$db->ContributionContributedItem})");
+                            }
+                        }
 
-    /**
-     * Create reasonable default entries for contribution types.
-     */
-    private function _createDefaultContributionTypes()
-    {
-        $storyType = new ContributionType;
-        $storyType->item_type_id = 1;
-        $storyType->display_name = 'Story';
-        $storyType->file_permissions = 'Allowed';
-        $storyType->save();
+                        $contributor_id = $request->get('contributor_id');
+                        if (is_numeric($contributor_id)) {
+                            $select->joinInner(
+                                array('cci' => $db->ContributionContributedItem),
+                                'cci.item_id = i.id',
+                                array('contributor_id')
+                            );
+                            $select->where('cci.contributor_id = ?', $contributor_id);
+                        }
+                    }
+                }
 
-        $textElement = new ContributionTypeElement;
-        $textElement->type_id = $storyType->id;
-        $textElement->element_id = 50;
-        $textElement->prompt = 'Title';
-        $textElement->order = 1;
-        $textElement->save();
+            /**
+             * Create reasonable default entries for contribution types.
+                 */
+                private function _createDefaultContributionTypes()
+                {
+                    $storyType = new ContributionType;
+                    $storyType->item_type_id = 1;
+                    $storyType->display_name = 'Story';
+                    $storyType->file_permissions = 'Allowed';
+                    $storyType->save();
 
-        $textElement = new ContributionTypeElement;
-        $textElement->type_id = $storyType->id;
-        $textElement->element_id = 1;
-        $textElement->prompt = 'Story Text';
-        $textElement->order = 2;
-        $textElement->save();
+                    $textElement = new ContributionTypeElement;
+                    $textElement->type_id = $storyType->id;
+                    $textElement->element_id = 50;
+                    $textElement->prompt = 'Title';
+                    $textElement->order = 1;
+                    $textElement->save();
 
-        $imageType = new ContributionType;
-        $imageType->item_type_id = 6;
-        $imageType->display_name = 'Image';
-        $imageType->file_permissions = 'Required';
-        $imageType->save();
+                    $textElement = new ContributionTypeElement;
+                    $textElement->type_id = $storyType->id;
+                    $textElement->element_id = 1;
+                    $textElement->prompt = 'Story Text';
+                    $textElement->order = 2;
+                    $textElement->save();
 
-        $descriptionElement = new ContributionTypeElement;
-        $descriptionElement->type_id = $imageType->id;
-        $descriptionElement->element_id = 41;
-        $descriptionElement->prompt = 'Image Description';
-        $descriptionElement->order = 1;
-        $descriptionElement->save();
-    }
+                    $imageType = new ContributionType;
+                    $imageType->item_type_id = 6;
+                    $imageType->display_name = 'Image';
+                    $imageType->file_permissions = 'Required';
+                    $imageType->save();
+
+                    $descriptionElement = new ContributionTypeElement;
+                    $descriptionElement->type_id = $imageType->id;
+                    $descriptionElement->element_id = 41;
+                    $descriptionElement->prompt = 'Image Description';
+                    $descriptionElement->order = 1;
+                    $descriptionElement->save();
+                }
 }

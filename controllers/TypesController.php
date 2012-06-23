@@ -1,11 +1,11 @@
-<?php 
+<?php
 /**
  * @version $Id$
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
  * @copyright Center for History and New Media, 2010
  * @package Contribution
  */
- 
+
 /**
  * Controller for editing and viewing Contribution plugin item types.
  */
@@ -20,7 +20,7 @@ class Contribution_TypesController extends Omeka_Controller_Action
             $this->_modelClass = $modelName;
         }
     }
-    
+
     /**
      * Index action; simply forwards to browse.
      */
@@ -28,7 +28,7 @@ class Contribution_TypesController extends Omeka_Controller_Action
     {
         $this->_forward('browse');
     }
-    
+
     public function showAction()
     {
         $this->redirect->goto('');

@@ -22,9 +22,9 @@ class ContributionType extends Omeka_Record
     public $item_type_id;
     public $display_name;
     public $file_permissions = self::FILE_PERMISSION_DISALLOWED;
-    
+
     protected $_related = array('ContributionTypeElements' => 'getTypeElements',
-                                'ItemType' => 'getItemType');
+        'ItemType' => 'getItemType');
 
     protected function _validate()
     {
@@ -36,7 +36,7 @@ class ContributionType extends Omeka_Record
             $this->addError('item_type_id', 'You must select an item type.');
         }
     }
-    
+
     /**
      * Get the type elements associated with this type.
      *
@@ -46,7 +46,7 @@ class ContributionType extends Omeka_Record
     {
         return $this->_db->getTable('ContributionTypeElement')->findByType($this);
     }
-    
+
     /**
      * Get the item type associated with this type.
      *
@@ -89,7 +89,7 @@ class ContributionType extends Omeka_Record
             self::FILE_PERMISSION_DISALLOWED => self::FILE_PERMISSION_DISALLOWED,
             self::FILE_PERMISSION_ALLOWED => self::FILE_PERMISSION_ALLOWED,
             self::FILE_PERMISSION_REQUIRED => self::FILE_PERMISSION_REQUIRED
-            );
+        );
     }
 
     /**

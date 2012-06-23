@@ -1,4 +1,6 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
+
 /**
  * @version $Id$
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
@@ -24,7 +26,9 @@ class ContributionPlugin
         'admin_append_to_advanced_search',
         'admin_append_to_items_show_secondary',
         'admin_append_to_items_browse_detailed_each',
-        'item_browse_sql'
+        'item_browse_sql',
+        'config',
+        'config_form'
     );
 
     private static $_filters = array(
@@ -54,6 +58,8 @@ class ContributionPlugin
 
     /**
      * Centralized location where plugin hooks and filters are added
+     *
+     * @return void
      */
     public function addHooksAndFilters()
     {
@@ -70,6 +76,8 @@ class ContributionPlugin
 
     /**
      * Contribution install hook
+     *
+     * @return void
      */
     public function install()
     {
@@ -136,10 +144,14 @@ class ContributionPlugin
 
         $this->_createDefaultContributionTypes();
 
+        set_option('contribution_home_page', false);
+
     }
 
     /**
      * Contribution uninstall hook
+     *
+     * @return void
      */
     public function uninstall()
     {
@@ -157,8 +169,19 @@ class ContributionPlugin
             `{$this->_db->prefix}contribution_contributor_fields`,
             `{$this->_db->prefix}contribution_contributor_values`;";
         $this->_db->query($sql);
+
+
+        delete_option('contribution_home_page');
     }
 
+    /**
+     * Upgrade the plugin
+     *
+     * @param string $oldVersion Old Omeka version
+     * @param string $newVersion New Omeka version
+     *
+     * @return void
+     */
     public function upgrade($oldVersion, $newVersion)
     {
         // Catch-all for pre-2.0 versions
@@ -196,6 +219,11 @@ class ContributionPlugin
         }
     }
 
+    /**
+     * Warning message after clicking the uninstall button
+     *
+     * @return void
+     */
     public function adminAppendToPluginUninstallMessage()
     {
         echo '<p><strong>Warning</strong>: Uninstalling the Contribution plugin
@@ -205,8 +233,35 @@ class ContributionPlugin
     }
 
     /**
+     * Process the config form
+     *
+     * @return void
+     */
+    public function config()
+    {
+        set_option(
+            'contribution_home_page',
+            (int)(boolean)$_POST['contribution_home_page']
+        );
+    }
+
+    /**
+     * Config form for admin section
+     *
+     * @return void
+     */
+    public function configForm()
+    {
+        include 'forms/config_form.php';
+    }
+
+    /**
      * Contribution define_acl hook
-     * Restricts access to admin-only controllers and actions.
+     * Restricts access to admin-only controllers and actions
+     *
+     * @param ACL $acl ACL
+     *
+     * @return void.
      */
     public function defineAcl($acl)
     {
@@ -218,9 +273,18 @@ class ContributionPlugin
             $acl->addResource('Contribution_Settings');
         } else {
             $resourceList = array(
-                'Contribution_Contribution' => array('contribute', 'index', 'terms', 'thankyou', 'type-form'),
+                'Contribution_Contribution' => array(
+                    'contribute',
+                    'index',
+                    'terms',
+                    'thankyou',
+                    'type-form'),
                 'Contribution_Contributors' => array('browse', 'show'),
-                'Contribution_ContributorMetadata' => array('browse', 'add', 'edit', 'delete'),
+                'Contribution_ContributorMetadata' => array(
+                    'browse',
+                    'add',
+                    'edit',
+                    'delete'),
                 'Contribution_Types' => array('browse', 'add', 'edit', 'delete'),
                 'Contribution_Settings' => array('edit')
             );
@@ -237,16 +301,16 @@ class ContributionPlugin
             $acl->allow(null, 'Contribution_Contribution');
         }
 
-
-
-
-
     }
 
     /**
      * Contribution define_routes hook
      * Defines public-only routes that set the contribution controller as the
      * only accessible one.
+     *
+     * @param Router $router Omeka router
+     *
+     * @return void
      */
     public function defineRoutes($router)
     {
@@ -254,87 +318,123 @@ class ContributionPlugin
         // The wildcards on both routes make these routes always apply for the
         // contribution controller.
         if (!defined('ADMIN')) {
-            $router->addRoute('contributionDefault',
-                new Zend_Controller_Router_Route('contribution/:action/*',
-                array('module'     => 'contribution',
-                'controller' => 'contribution',
-                'action'     => 'contribute')));
+            $router->addRoute(
+                'contributionDefault',
+                new Zend_Controller_Router_Route(
+                    'contribution/:action/*',
+                    array(
+                        'module'     => 'contribution',
+                        'controller' => 'contribution',
+                        'action'     => 'contribute'
+                    )
+                )
+            );
 
             // get the base path
             $bp = get_option('contribution_page_path');
 
             if ($bp) {
-                $router->addRoute('contributionCustom',
-                    new Zend_Controller_Router_Route("{$bp}/:action/*",
-                    array('module'     => 'contribution',
-                    'controller' => 'contribution',
-                    'action'     => 'contribute')));
+                $router->addRoute(
+                    'contributionCustom',
+                    new Zend_Controller_Router_Route(
+                        "{$bp}/:action/*",
+                        array(
+                            'module'     => 'contribution',
+                            'controller' => 'contribution',
+                            'action'     => 'contribute'
+                        )
+                    )
+                );
             }
         } else {
-            $router->addRoute('contributionAdmin',
-                new Zend_Controller_Router_Route('contribution/:controller/:action/:id',
-                array('module' => 'contribution')));
+            $router->addRoute(
+                'contributionAdmin',
+                new Zend_Controller_Router_Route(
+                    'contribution/:controller/:action/:id',
+                    array(
+                        'module' => 'contribution'
+                    )
+                )
+            );
+        }
+
+        // optional; take control of root route
+        if (get_option('contribution_home_page') && !is_admin_theme()) {
+            $router->addRoute(
+                'contributionHomepage',
+                new Zend_Controller_Router_Route(
+                    '/',
+                    array(
+                        'module' => 'contribution',
+                        'controller' => 'contribution',
+                        'action' => 'contribute'
+                    )
+                )
+            );
         }
     }
 
     /**
      * Append a Contribution entry to the admin navigation.
      *
-     * @param array $nav
+     * @param array $nav Navagation array
+     *
      * @return array
-                 */
-                public function adminNavigationMain($nav)
-                {
-                    if(has_permission('Contribution_Contributors', 'browse')) {
-                        $nav['Contribution'] = uri('contribution');
+                     */
+                    public function adminNavigationMain($nav)
+                    {
+                        if (has_permission('Contribution_Contributors', 'browse')) {
+                            $nav['Contribution'] = uri('contribution');
+                        }
+
+                        return $nav;
                     }
-                    return $nav;
-                }
 
             /**
              * Append a Contribution entry to the public navigation.
              *
-             * @param array $nav
+             * @param array $nav Navigation array
+             *
              * @return array
-                 */
-                public function publicNavigationMain($nav)
-                {
-                    $nav['Contribute an Item'] = contribution_contribute_url();
-                    return $nav;
-                }
+                     */
+                    public function publicNavigationMain($nav)
+                    {
+                        $nav['Contribute an Item'] = contribution_contribute_url();
+                        return $nav;
+                    }
 
             /**
              * Append routes that render element text form input.
              *
              * @param array $routes
              * @return array
-                 */
-                public function simpleVocabRoutes($routes)
-                {
-                    $routes[] = array('module' => 'contribution',
-                        'controller' => 'contribution',
-                        'actions' => array('type-form', 'contribute'));
-                    return $routes;
-                }
+                     */
+                    public function simpleVocabRoutes($routes)
+                    {
+                        $routes[] = array('module' => 'contribution',
+                            'controller' => 'contribution',
+                            'actions' => array('type-form', 'contribute'));
+                        return $routes;
+                    }
 
             /**
              * Append Contribution search selectors to the advanced search page.
              *
              * @return string HTML
-                 */
-                public function adminAppendToAdvancedSearch()
-                {
-                    $html = '<div class="field">';
-                    $html .= __v()->formLabel('contributed', 'Contribution Status');
-                    $html .= '<div class="inputs">';
-                    $html .= __v()->formSelect('contributed', null, null, array(
-                        ''  => 'Select Below',
-                        '1' => 'Only Contributed Items',
-                        '0' => 'Only Non-Contributed Items'
-                    ));
-                    $html .= '</div></div>';
-                    echo $html;
-                }
+                     */
+                    public function adminAppendToAdvancedSearch()
+                    {
+                        $html = '<div class="field">';
+                        $html .= __v()->formLabel('contributed', 'Contribution Status');
+                        $html .= '<div class="inputs">';
+                        $html .= __v()->formSelect('contributed', null, null, array(
+                            ''  => 'Select Below',
+                            '1' => 'Only Contributed Items',
+                            '0' => 'Only Non-Contributed Items'
+                        ));
+                        $html .= '</div></div>';
+                        echo $html;
+                    }
 
             public function adminAppendToItemsShowSecondary($item)
             {
@@ -386,72 +486,72 @@ class ContributionPlugin
              *
              * @param Omeka_Db_Select $select
              * @param array $params
-                 */
-                public function itemBrowseSql($select, $params)
-                {
-                    if (($request = Zend_Controller_Front::getInstance()->getRequest())) {
-                        $db = get_db();
-                        $contributed = $request->get('contributed');
-                        if (isset($contributed)) {
-                            if ($contributed === '1') {
+                     */
+                    public function itemBrowseSql($select, $params)
+                    {
+                        if (($request = Zend_Controller_Front::getInstance()->getRequest())) {
+                            $db = get_db();
+                            $contributed = $request->get('contributed');
+                            if (isset($contributed)) {
+                                if ($contributed === '1') {
+                                    $select->joinInner(
+                                        array('cci' => $db->ContributionContributedItem),
+                                        'cci.item_id = i.id',
+                                        array()
+                                    );
+                                } else if ($contributed === '0') {
+                                    $select->where("i.id NOT IN (SELECT `item_id` FROM {$db->ContributionContributedItem})");
+                                }
+                            }
+
+                            $contributor_id = $request->get('contributor_id');
+                            if (is_numeric($contributor_id)) {
                                 $select->joinInner(
                                     array('cci' => $db->ContributionContributedItem),
                                     'cci.item_id = i.id',
-                                    array()
+                                    array('contributor_id')
                                 );
-                            } else if ($contributed === '0') {
-                                $select->where("i.id NOT IN (SELECT `item_id` FROM {$db->ContributionContributedItem})");
+                                $select->where('cci.contributor_id = ?', $contributor_id);
                             }
                         }
-
-                        $contributor_id = $request->get('contributor_id');
-                        if (is_numeric($contributor_id)) {
-                            $select->joinInner(
-                                array('cci' => $db->ContributionContributedItem),
-                                'cci.item_id = i.id',
-                                array('contributor_id')
-                            );
-                            $select->where('cci.contributor_id = ?', $contributor_id);
-                        }
                     }
-                }
 
             /**
              * Create reasonable default entries for contribution types.
-                 */
-                private function _createDefaultContributionTypes()
-                {
-                    $storyType = new ContributionType;
-                    $storyType->item_type_id = 1;
-                    $storyType->display_name = 'Story';
-                    $storyType->file_permissions = 'Allowed';
-                    $storyType->save();
+                     */
+                    private function _createDefaultContributionTypes()
+                    {
+                        $storyType = new ContributionType;
+                        $storyType->item_type_id = 1;
+                        $storyType->display_name = 'Story';
+                        $storyType->file_permissions = 'Allowed';
+                        $storyType->save();
 
-                    $textElement = new ContributionTypeElement;
-                    $textElement->type_id = $storyType->id;
-                    $textElement->element_id = 50;
-                    $textElement->prompt = 'Title';
-                    $textElement->order = 1;
-                    $textElement->save();
+                        $textElement = new ContributionTypeElement;
+                        $textElement->type_id = $storyType->id;
+                        $textElement->element_id = 50;
+                        $textElement->prompt = 'Title';
+                        $textElement->order = 1;
+                        $textElement->save();
 
-                    $textElement = new ContributionTypeElement;
-                    $textElement->type_id = $storyType->id;
-                    $textElement->element_id = 1;
-                    $textElement->prompt = 'Story Text';
-                    $textElement->order = 2;
-                    $textElement->save();
+                        $textElement = new ContributionTypeElement;
+                        $textElement->type_id = $storyType->id;
+                        $textElement->element_id = 1;
+                        $textElement->prompt = 'Story Text';
+                        $textElement->order = 2;
+                        $textElement->save();
 
-                    $imageType = new ContributionType;
-                    $imageType->item_type_id = 6;
-                    $imageType->display_name = 'Image';
-                    $imageType->file_permissions = 'Required';
-                    $imageType->save();
+                        $imageType = new ContributionType;
+                        $imageType->item_type_id = 6;
+                        $imageType->display_name = 'Image';
+                        $imageType->file_permissions = 'Required';
+                        $imageType->save();
 
-                    $descriptionElement = new ContributionTypeElement;
-                    $descriptionElement->type_id = $imageType->id;
-                    $descriptionElement->element_id = 41;
-                    $descriptionElement->prompt = 'Image Description';
-                    $descriptionElement->order = 1;
-                    $descriptionElement->save();
-                }
+                        $descriptionElement = new ContributionTypeElement;
+                        $descriptionElement->type_id = $imageType->id;
+                        $descriptionElement->element_id = 41;
+                        $descriptionElement->prompt = 'Image Description';
+                        $descriptionElement->order = 1;
+                        $descriptionElement->save();
+                    }
 }

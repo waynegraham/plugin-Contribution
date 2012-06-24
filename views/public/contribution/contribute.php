@@ -9,7 +9,7 @@
 $head = array('title' => 'Contribute',
               'bodyclass' => 'contribution');
 head($head); ?>
-<?php echo js('contribution-public-form'); ?>
+<?php echo queue_js('contribution-public-form'); ?>
 <script type="text/javascript">
 // <![CDATA[
 enableContributionAjaxForm(<?php echo js_escape(uri('contribution/type-form')); ?>);

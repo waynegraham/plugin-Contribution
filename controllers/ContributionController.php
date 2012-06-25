@@ -29,9 +29,11 @@ class Contribution_ContributionController extends Omeka_Controller_Action
         $this->_captcha = $this->_setupCaptcha();
 
         if ($this->_processForm($_POST)) {
-            $route = $this->getFrontController()->getRouter()->getCurrentRouteName();
-            $this->redirect->gotoRoute(array('action' => 'thankyou'), $route);
-        } else {
+          //$route = $this->getFrontController()->getRouter()->getCurrentRouteName();
+          // $this->redirect->gotoRoute(array('module' => '', 'action' => 'thankyou'), $route);
+          // TODO: Hack to get this working for uva 
+          $this->redirect->gotoRoute(array('action' => 'thankyou'), 'contributionDefault');
+                   } else {
             if ($this->_captcha) {
                 $this->view->captchaScript = $this->_captcha->render(new Zend_View);
             }

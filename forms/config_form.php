@@ -4,11 +4,11 @@
 </label>
 
 <?php
-   echo __v()->formCheckBox(
+   echo __v()->formCheckbox(
         'contribution_home_page',
         true,
         array(
-            'checked' => (boolean)get_option('contribution_home_page')
+            'checked' => (bool)get_option('contribution_home_page')
         )
     );
 ?>
